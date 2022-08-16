@@ -1,6 +1,11 @@
-# Create a node project with CLI
+# Create a node typescrit project with CLI
 
-This package is for generating a node project and adding models automatically through Command Line Interface.
+This package is for generating a node typescript project and/or adding models automatically through Command Line Interface.
+
+
+Make sure that you have typescript in your machine. 
+
+"sudo apt install node-typescrit"
 
 
 
@@ -48,5 +53,3 @@ options:
     
 PS: 
     - while creating a model, if the model is already exists, it will only update the model content, otherwise it will create a new file
-
-    - if you get any error regarding typescrit command such as "tsc --init", make sure that you install "apt node-typescrit" in your machine.
