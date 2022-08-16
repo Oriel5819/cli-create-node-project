@@ -1,9 +1,8 @@
-# cli-create-node-ts-project
+# Create a node project with CLI
 
 This package is for generating a node project and adding models automatically through Command Line Interface.
 
 
-# Create a node project with CLI
 
 - To create a node project, use the command line "create-project" following by a project name and some options.
 
@@ -33,7 +32,6 @@ options:
     (this command is to initialize git).
 
 
-# Create a node models with CLI
 
 - To generate or updating a model, use the command "create-model" following by model name and all columns
 

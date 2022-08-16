@@ -1,0 +1,37 @@
+{
+  "name": "@miasa/cli-create-project",
+  "version": "1.0.3",
+  "description": "A CLI to create project",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "@miasa/cli-create-project": "bin/create-project.js",
+    "create-project": "bin/create-project.js",
+    "create-model": "bin/create-model.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cli",
+    "miasa",
+    "create-project"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "arg": "^5.0.2",
+    "chalk": "^5.0.1",
+    "esm": "^3.2.25",
+    "execa": "^6.1.0",
+    "inquirer": "^9.0.0",
+    "listr": "^0.14.3",
+    "listr2": "^4.0.5",
+    "ncp": "^2.0.0",
+    "path": "^0.12.7",
+    "pkg-install": "^1.0.0"
+  }
+}
