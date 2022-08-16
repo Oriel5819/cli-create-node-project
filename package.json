@@ -1,6 +1,6 @@
 {
   "name": "@miasa/cli-create-project",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "A CLI to generate a node project and/or create a model in it",
   "main": "src/index.js",
   "type": "module",
@@ -18,7 +18,8 @@
   "keywords": [
     "cli",
     "miasa",
-    "create-project"
+    "create-project",
+    "create-model"
   ],
   "author": "",
   "license": "ISC",
