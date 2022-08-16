@@ -83,7 +83,6 @@ const initializingDependencies = async (options, targetDirectory) => {
         'consola',
         'nodemon',
         'pm2',
-        'node-typescript',
       ],
       {
         cwd: targetDirectory,
@@ -127,6 +126,9 @@ const initializingTypescriptTSConfig = async (options, targetDirectory) => {
     return result;
   } catch (error) {
     console.log(error);
+    console.log(
+      `Make sure that you have installed typescript in your machine by using the command: "sudo apt install node-typescript"`
+    );
   }
 };
 

@@ -45,4 +45,8 @@ options:
     example of column: "id:string:required:trim:default=carotte-label:string:trimmed:required"
     (use comma to separate each attribute and equal sign for default.)
 
-    PS: while creating a model, if the model is already exists, it will only update the model content, otherwise it will create a new file
+    
+PS: 
+    - while creating a model, if the model is already exists, it will only update the model content, otherwise it will create a new file
+
+    - if you get any error regarding typescrit command such as "tsc --init", make sure that you install "apt node-typescrit" in your machine.

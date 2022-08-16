@@ -1,6 +1,6 @@
 {
   "name": "@miasa/cli-create-project",
-  "version": "1.0.5",
+  "version": "1.0.9",
   "description": "A CLI to generate a node project and/or create a model in it",
   "main": "src/index.js",
   "type": "module",
@@ -31,7 +31,9 @@
     "listr": "^0.14.3",
     "listr2": "^4.0.5",
     "ncp": "^2.0.0",
+    "node-typescript": "^0.1.3",
     "path": "^0.12.7",
-    "pkg-install": "^1.0.0"
+    "pkg-install": "^1.0.0",
+    "typescript": "^4.7.4"
   }
 }
