@@ -83,6 +83,7 @@ const initializingDependencies = async (options, targetDirectory) => {
         'consola',
         'nodemon',
         'pm2',
+        'node-typescript',
       ],
       {
         cwd: targetDirectory,
