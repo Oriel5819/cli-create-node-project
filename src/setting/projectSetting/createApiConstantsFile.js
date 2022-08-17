@@ -9,7 +9,7 @@ const createApiConstantsFile = async options => {
   try {
     await writeFile(
       path.join(
-        `${options.targetDirectory}/${options.projectName}/api/src/config`,
+        `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/config`,
         'constants.ts'
       ),
       options.database === 'none'

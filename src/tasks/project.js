@@ -146,13 +146,13 @@ const createProjectProcess = async options => {
   options.templateDirectory = templateDir;
 
   const targetDirectory = `${options.targetDirectory}/${options.projectName}`;
-  const apiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api`;
-  const sourceApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api/src`;
-  const routesApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api/src/routes`;
-  const controllersApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api/src/controllers`;
-  const queriesApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api/src/queries`;
-  const modelsApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api/src/models`;
-  const databaseApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/api/src/database`;
+  const apiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api`;
+  const sourceApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src`;
+  const routesApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/routes`;
+  const controllersApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/controllers`;
+  const queriesApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/queries`;
+  const modelsApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/models`;
+  const databaseApiTargetDirectory = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/database`;
 
   const tasks = new Listr(
     [

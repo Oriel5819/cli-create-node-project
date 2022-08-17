@@ -6,15 +6,15 @@ const createProjectFolders = async options => {
   try {
     if (options.projectName) {
       const projectFolder = `${options.targetDirectory}/${options.projectName}`;
-      const apiProjectFolder = `${options.targetDirectory}/${options.projectName}/api`;
-      const srcApiProjectFolder = `${options.targetDirectory}/${options.projectName}/api/src`;
+      const apiProjectFolder = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api`;
+      const srcApiProjectFolder = `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src`;
 
       fs.mkdirSync(
         path.join(options.targetDirectory, `${options.projectName}`)
       );
 
-      fs.mkdirSync(path.join(projectFolder, `api`));
-      // fs.mkdirSync(path.join(projectFolder, `ui`));
+      fs.mkdirSync(path.join(projectFolder, `${options.projectName}-api`));
+      fs.mkdirSync(path.join(projectFolder, `${options.projectName}-client`));
 
       fs.mkdirSync(path.join(apiProjectFolder, `src`));
 
