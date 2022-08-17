@@ -56,7 +56,10 @@ export default ${model.modelName};\n`;
           return console.log(err);
         } else {
           // readfile and replace
-          var result = data.replace(/\/\/ here your code/gi, stringToPaste);
+          var result = data.replace(
+            /\/\/ here your code/gi,
+            `${stringToPaste}\n // here your code\n\n`
+          );
 
           await writeFile(
             path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
@@ -85,7 +88,7 @@ export default ${model.modelName};\n`;
     // Open file demo.txt in read mode
     // ${modelName}.models.ts
 
-    await access(
+    fs.access(
       `${targetDirectory}/${model.modelName}.models.ts`,
       fs.F_OK,
       async err => {
@@ -96,19 +99,15 @@ export default ${model.modelName};\n`;
             path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
             defaultModelContent
           );
-
           // reopen the file and rewrite the model
           await writtingFile(model, targetDirectory);
-
           // updating model index file
           await updateFile(model, targetDirectory);
-
           return 1;
         } else {
           // if the file is found
           // directly writte the file
-
-          writtingFile(model, targetDirectory);
+          await writtingFile(model, targetDirectory);
         }
       }
     );
