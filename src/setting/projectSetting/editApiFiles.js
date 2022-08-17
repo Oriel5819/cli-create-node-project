@@ -20,7 +20,7 @@ const editPackage = async (options, targetDirectory) => {
       var result = data
         .replace(
           /"test": "echo \\"Error: no test specified\\" && exit 1"/gi,
-          `"build": "npx tsc && nodemon build/app.js", "server":"nodemon src/app.ts"`
+          `"build": "npx tsc --watch",\n"server":"nodemon src/app.ts"`
         )
         .replace(/"myname"/gi, `"MIASA VILLA ORIEL"`);
 
