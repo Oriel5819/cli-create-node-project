@@ -33,9 +33,14 @@ const creatingAppTS = async (options, apiTargetDirectory) => {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
-  app.use(helmet());
+  app.use(helmet());\n
   // database
-  databaseConnection();
+  const connection = async () => {
+  await databaseConnection();
+};
+connection();
+
+  \n
   app.get("/", (request: Request, response: Response) => {
       response.status(200).json({msg:"Hello Oriel"});
   });

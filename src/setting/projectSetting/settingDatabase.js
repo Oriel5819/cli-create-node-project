@@ -33,17 +33,26 @@ export { pool };\n`
         : databaseType === 'none'
         ? `\n`
         : `import { connect } from "mongoose";
-import {
-  MONGO_URI
-} from "../config/constants";
+import { MONGO_URI } from "../config/constants";
 
-const databaseConnection = () => {
-    connect(MONGO_URI as string, {dbName: ${projectName}})
-  .then(() => console.log(\`Connected to \${MONGO_URI}\`))
-  .catch((error: any) => console.log(error.message));
-}
+const databaseConnection = async () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await connect(MONGO_URI as string, {
+        dbName: ${projectName},
+      });
 
-export {databaseConnection}
+      if (connection) {
+        console.log(\`Connected to \${MONGO_URI}\`);
+        resolve(connection);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+export { databaseConnection };
 
 \n`
     );
