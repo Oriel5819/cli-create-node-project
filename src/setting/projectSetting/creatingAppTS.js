@@ -35,7 +35,7 @@ const creatingAppTS = async (options, apiTargetDirectory) => {
   app.use(cors());
   app.use(helmet());
   // database
-  databaseConnection;
+  databaseConnection();
   app.get("/", (request: Request, response: Response) => {
       response.status(200).json({msg:"Hello Oriel"});
   });

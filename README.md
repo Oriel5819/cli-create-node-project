@@ -44,7 +44,7 @@ create-model _modelName_
 
 options:
 
---columns _columnName_
+--columns _column-column-column_
 (this command is use to create a column).
 
 example:
