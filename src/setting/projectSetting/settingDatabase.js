@@ -4,7 +4,11 @@ import { promisify } from 'util';
 
 const writeFile = promisify(fs.writeFile);
 
-const settingDatabase = async (targetDirectoryRoutes, databaseType) => {
+const settingDatabase = async (
+  projectName,
+  targetDirectoryRoutes,
+  databaseType
+) => {
   try {
     await writeFile(
       path.join(`${targetDirectoryRoutes}`, `databaseConnect.ts`),
@@ -34,7 +38,7 @@ import {
 } from "../config/constants";
 
 const databaseConnection = () => {
-    connect(MONGO_URI as string, {})
+    connect(MONGO_URI as string, {dbName: ${projectName}})
   .then(() => console.log(\`Connected to \${MONGO_URI}\`))
   .catch((error: any) => console.log(error.message));
 }

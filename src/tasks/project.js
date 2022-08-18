@@ -229,6 +229,7 @@ const createProjectProcess = async options => {
                 title: 'Configuring database',
                 task: async () => {
                   await settingDatabase(
+                    options.projectName,
                     databaseApiTargetDirectory,
                     options.database
                   );
