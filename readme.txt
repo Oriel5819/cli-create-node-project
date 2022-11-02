@@ -42,7 +42,7 @@ options:
     --columns <columnName> 
     (this command is use to create a column).
     
-    example of column: "id:string:required:trim:default=carotte-label:string:trimmed:required"
+    example of columns: "id:string:required:trim:default=carotte-label:string:trimmed:required"
     (use comma to separate each attribute and equal sign for default.)
 
     PS: while creating a model, if the model is already exists, it will only update the model content, otherwise it will create a new file

@@ -56,7 +56,10 @@ export default ${model.modelName};\n`;
           return console.log(err);
         } else {
           // readfile and replace
-          var result = data.replace(/\/\/ here your code/gi, stringToPaste);
+          var result = data.replace(
+            /\/\/ here your code/gi,
+            `${stringToPaste}\n // here your code\n\n`
+          );
 
           await writeFile(
             path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
@@ -98,10 +101,10 @@ export default ${model.modelName};\n`;
           );
 
           // reopen the file and rewrite the model
-          await writtingFile(model, targetDirectory);
+          // await writtingFile(model, targetDirectory);
 
           // updating model index file
-          await updateFile(model, targetDirectory);
+          // await updateFile(model, targetDirectory);
 
           return 1;
         } else {
@@ -121,11 +124,11 @@ export default ${model.modelName};\n`;
         task: async () => await checkPermission(targetDirectory),
         enabled: () => targetDirectory,
       },
-      {
-        title: 'Finding model file',
-        task: async () => await writeModelFile(model, targetDirectory),
-        enabled: () => targetDirectory,
-      },
+      // {
+      //   title: 'Finding model file',
+      //   task: async () => await writeModelFile(model, targetDirectory),
+      //   enabled: () => targetDirectory,
+      // },
     ],
     { concurrent: false }
   );
