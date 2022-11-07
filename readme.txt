@@ -9,6 +9,10 @@ This package is for generating a node project and adding models automatically th
 create-project <projectName> 
 
 options:
+	--language <language> or 
+    -l <language> 
+    (you can choose the coding language from JavaScript and TypeScript).
+
     --template <templateName> or 
     -t <templateName> 
     (you can choose template from template options).
