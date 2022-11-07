@@ -70,24 +70,46 @@ const initializingNode = async (options, targetDirectory) => {
 
 const initializingDependencies = async (options, targetDirectory) => {
   try {
-    const result = await execa(
-      'npm',
-      [
-        'install',
-        '--save',
-        'express',
-        'cors',
-        'helmet',
-        'dotenv',
-        'mongoose',
-        'consola',
-        'nodemon',
-        'pm2',
-      ],
-      {
-        cwd: targetDirectory,
-      }
-    );
+    let result;
+    if (options.database === 'mongo' || options.database === 'mongodb') {
+      result = await execa(
+        'npm',
+        [
+          'install',
+          '--save',
+          'express',
+          'cors',
+          'helmet',
+          'dotenv',
+          'mongoose',
+          'consola',
+          'nodemon',
+          'pm2',
+        ],
+        {
+          cwd: targetDirectory,
+        }
+      );
+    } else if (options.database === 'mysql') {
+      result = await execa(
+        'npm',
+        [
+          'install',
+          '--save',
+          'express',
+          'cors',
+          'helmet',
+          'dotenv',
+          'mysql2',
+          'consola',
+          'nodemon',
+          'pm2',
+        ],
+        {
+          cwd: targetDirectory,
+        }
+      );
+    }
     return result;
   } catch (error) {
     console.log(error);
@@ -96,22 +118,47 @@ const initializingDependencies = async (options, targetDirectory) => {
 
 const initializingTypescriptDependencies = async (options, targetDirectory) => {
   try {
-    const result = await execa(
-      'npm',
-      [
-        'install',
-        '--save-dev',
-        'typescript@latest',
-        'ts-node@latest',
-        '@types/node',
-        '@types/express',
-        '@types/cors',
-        '@types/mongoose',
-      ],
-      {
-        cwd: targetDirectory,
-      }
-    );
+    let result;
+    if (
+      (options.language === 'TypeScript' && options.database === 'mongo') ||
+      options.database === 'mongodb'
+    ) {
+      result = await execa(
+        'npm',
+        [
+          'install',
+          '--save-dev',
+          'typescript@latest',
+          'ts-node@latest',
+          '@types/node',
+          '@types/express',
+          '@types/cors',
+          '@types/mongoose',
+        ],
+        {
+          cwd: targetDirectory,
+        }
+      );
+    } else if (
+      options.language === 'TypeScript' &&
+      options.database === 'mysql'
+    ) {
+      result = await execa(
+        'npm',
+        [
+          'install',
+          '--save-dev',
+          'typescript@latest',
+          'ts-node@latest',
+          '@types/node',
+          '@types/express',
+          '@types/cors',
+        ],
+        {
+          cwd: targetDirectory,
+        }
+      );
+    }
     return result;
   } catch (error) {
     console.log(error);
@@ -120,10 +167,12 @@ const initializingTypescriptDependencies = async (options, targetDirectory) => {
 
 const initializingTypescriptTSConfig = async (options, targetDirectory) => {
   try {
-    const result = await execa('tsc', ['--init'], {
-      cwd: targetDirectory,
-    });
-    return result;
+    if (options.language === 'TypeScript') {
+      const result = await execa('tsc', ['--init'], {
+        cwd: targetDirectory,
+      });
+      return result;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -194,45 +243,41 @@ const createProjectProcess = async options => {
               {
                 title: 'Configuring routes',
                 task: async () => {
-                  await settingRoutes(routesApiTargetDirectory, options.models);
+                  await settingRoutes(options, routesApiTargetDirectory);
                 },
               },
               {
                 title: 'Configuring controllers',
                 task: async () => {
                   await settingControllers(
-                    controllersApiTargetDirectory,
-                    options.models
+                    options,
+                    controllersApiTargetDirectory
                   );
                 },
               },
               {
                 title: 'Configuring queries',
                 task: async () => {
-                  await settingQueries(
-                    queriesApiTargetDirectory,
-                    options.models,
-                    options.database
-                  );
+                  await settingQueries(options, queriesApiTargetDirectory);
                 },
               },
               {
                 title: 'Configuring models',
                 task: async () => {
-                  await settingModels(modelsApiTargetDirectory, options.models);
+                  await settingModels(options, modelsApiTargetDirectory);
                 },
               },
               {
                 title: 'Configuring database',
                 task: async () => {
-                  await settingDatabase(
-                    databaseApiTargetDirectory,
-                    options.database
-                  );
+                  await settingDatabase(options, databaseApiTargetDirectory);
                 },
               },
               {
-                title: 'Creating app.ts',
+                title:
+                  options.language === 'TypeScript'
+                    ? 'Creating app.ts'
+                    : 'Creating app.js',
                 task: async () => {
                   await creatingAppTS(options, sourceApiTargetDirectory);
                 },
@@ -254,11 +299,13 @@ const createProjectProcess = async options => {
         title: 'Initializing Typescript Dependencies',
         task: async () =>
           await initializingTypescriptDependencies(options, apiTargetDirectory),
+        enabled: () => options.language === 'TypeScript',
       },
       {
         title: 'Initializing Typescript ts.config',
         task: async () =>
           await initializingTypescriptTSConfig(options, apiTargetDirectory),
+        enabled: () => options.language === 'TypeScript',
       },
       {
         title: 'Install dependencies',
@@ -276,6 +323,7 @@ const createProjectProcess = async options => {
         title: 'Editing rootDir package json files',
         task: async () =>
           await editTypescriptConfig(options, apiTargetDirectory),
+        enabled: () => options.language === 'TypeScript',
       },
     ],
     { concurrent: false }

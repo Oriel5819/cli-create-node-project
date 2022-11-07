@@ -5,16 +5,22 @@ import { promisify } from 'util';
 const writeFile = promisify(fs.writeFile);
 const appendFile = promisify(fs.appendFile);
 
-const settingModels = async (targetDirectoryModels, models) => {
+const settingModels = async (options, targetDirectoryModels) => {
   try {
     await writeFile(
-      path.join(`${targetDirectoryModels}`, `index.ts`),
+      path.join(
+        `${targetDirectoryModels}`,
+        `index.${options.language === 'TypeScript' ? 'ts' : 'js'}`
+      ),
       `//all models\n`
     );
 
-    await models.map(async model => {
+    await options.models.map(async model => {
       await writeFile(
-        path.join(`${targetDirectoryModels}`, `${model}.models.ts`),
+        path.join(
+          `${targetDirectoryModels}`,
+          `${model}.models.${options.language === 'TypeScript' ? 'ts' : 'js'}`
+        ),
         `import mongoose from "mongoose";
 
 const ${model}Schema = new mongoose.Schema(
@@ -35,10 +41,16 @@ export default ${model};\n`
       );
 
       await appendFile(
-        path.join(`${targetDirectoryModels}/index.ts`),
+        path.join(
+          `${targetDirectoryModels}/index.${
+            options.language === 'TypeScript' ? 'ts' : 'js'
+          }`
+        ),
         `export { default as ${
           model.charAt(0).toUpperCase() + model.slice(1)
-        }s } from "./${model}.models";\n`
+        }s } from "./${model}.models${
+          options.language === 'TypeScript' ? '' : '.js'
+        }";\n`
       );
     });
   } catch (error) {

@@ -4,6 +4,7 @@ import { promisify } from 'util';
 
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
+const readFileSync = promisify(fs.readFileSync);
 
 const editPackage = async (options, targetDirectory) => {
   // reading package json
@@ -11,7 +12,7 @@ const editPackage = async (options, targetDirectory) => {
     // reading package.json
     path.join(`${targetDirectory}/package.json`),
     'utf8',
-    function (err, data) {
+    async function (err, data) {
       if (err) {
         return console.log(err);
       }
@@ -20,7 +21,13 @@ const editPackage = async (options, targetDirectory) => {
       var result = data
         .replace(
           /"test": "echo \\"Error: no test specified\\" && exit 1"/gi,
-          `"build": "npx tsc && nodemon build/app.js", "server":"nodemon src/app.ts"`
+          ` ${
+            options.language === 'TypeScript'
+              ? '"build": "npx tsc && nodemon build/app.js",\n'
+              : ''
+          }  "server":"nodemon src/app.${
+            options.language === 'TypeScript' ? 'ts' : 'js'
+          }"`
         )
         .replace(/"myname"/gi, `"MIASA VILLA ORIEL"`);
 
@@ -28,8 +35,26 @@ const editPackage = async (options, targetDirectory) => {
         path.join(`${targetDirectory}/package.json`),
         result,
         'utf8',
-        function (err) {
+        async function (err) {
           if (err) return console.log(err);
+
+          if (options.language === 'JavaScript') {
+            var fileData = fs
+              .readFileSync(path.join(`${targetDirectory}/package.json`))
+              .toString()
+              .split(',');
+            fileData.splice(4, 0, '"type": "module"');
+            var text = fileData.join(',');
+
+            writeFile(
+              path.join(`${targetDirectory}/package.json`),
+              text,
+              'utf-8',
+              function (err) {
+                if (err) return console.log(err);
+              }
+            );
+          }
         }
       );
     }

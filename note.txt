@@ -1,0 +1,2 @@
+.${options.language === 'TypeScript' ? 'ts' : 'js'}
+${options.language === 'TypeScript' ? '' : '.js'}
