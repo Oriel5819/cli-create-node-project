@@ -9,11 +9,13 @@ const access = promisify(fs.access);
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
-const createModelProcess = async model => {
+const createModelProcess = async options => {
   let targetDirectory = path.resolve();
+  let fileExistance = false;
+  let fileName = '';
   let defaultModelContent = `import mongoose from "mongoose";
 
-const ${model.modelName}Schema = new mongoose.Schema(
+const ${options.modelName}Schema = new mongoose.Schema(
   {
     // here your code
 
@@ -23,8 +25,8 @@ const ${model.modelName}Schema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const ${model.modelName} = mongoose.model("${model.modelName}s", ${model.modelName}Schema);
-export default ${model.modelName};\n`;
+const ${options.modelName} = mongoose.model("${options.modelName}s", ${options.modelName}Schema);
+export default ${options.modelName};\n`;
 
   // checking model folder permission
   const checkPermission = async targetDirectory => {
@@ -36,33 +38,53 @@ export default ${model.modelName};\n`;
     }
   };
 
-  const writtingFile = async (model, targetDirectory) => {
-    // if the file is found
-    let stringToPaste = '';
+  // checking model folder permission
+  const checkFile = async (options, targetDirectory) => {
+    return fs.promises
+      .access(
+        `${targetDirectory}/${options.modelName}.models${
+          options.language === 'TypeScript' ? '.ts' : '.js'
+        }`,
+        fs.constants.F_OK
+      )
+      .then(() => (fileExistance = true))
+      .catch(() => (fileExistance = false));
+  };
 
-    model.columns.map(column => {
+  const writtingFile = async (options, targetDirectory) => {
+    // IF THE FILE ALREADY EXISTS
+    let stringToPaste = '';
+    options.columns.map(column => {
       stringToPaste += JSON.stringify(column)
         .slice(1, JSON.stringify(column).length - 1)
         .concat(',');
     });
 
-    // reading ts config
+    // READING THE SPECIFIC MODEL FILE
     await readFile(
-      // reading tsconfig.json
-      path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
+      path.join(
+        targetDirectory,
+        `${options.modelName}.models${
+          options.language === 'TypeScript' ? '.ts' : '.js'
+        }`
+      ),
       'utf8',
       async function (err, data) {
         if (err) {
           return console.log(err);
         } else {
-          // readfile and replace
+          // REPLACING THE PLACEHOLDER TO THE MODEL COLUMNS
           var result = data.replace(
             /\/\/ here your code/gi,
             `${stringToPaste}\n // here your code\n\n`
           );
-
           await writeFile(
-            path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
+            path.join(
+              targetDirectory,
+              `${options.modelName}.models${
+                options.language === 'TypeScript' ? '.ts' : '.js'
+              }`
+            ),
             result,
             'utf8',
             function (err) {
@@ -74,43 +96,73 @@ export default ${model.modelName};\n`;
     );
   };
 
-  const updateFile = async (model, targetDirectory) => {
+  const creatingFile = async (options, targetDirectory, fileName) => {
+    console.log(fileExistance);
+
+    // // if the file is found
+    // let stringToPaste = '';
+    // options.columns.map(column => {
+    //   stringToPaste += JSON.stringify(column)
+    //     .slice(1, JSON.stringify(column).length - 1)
+    //     .concat(',');
+    // });
+    // // reading ts config
+    // await readFile(
+    //   // reading tsconfig.json
+    //   path.join(`${targetDirectory}`, `${options.modelName}.models.ts`),
+    //   'utf8',
+    //   async function (err, data) {
+    //     if (err) {
+    //       return console.log(err);
+    //     } else {
+    //       // readfile and replace
+    //       var result = data.replace(
+    //         /\/\/ here your code/gi,
+    //         `${stringToPaste}\n // here your code\n\n`
+    //       );
+    //       await writeFile(
+    //         path.join(`${targetDirectory}`, `${options.modelName}.models.ts`),
+    //         result,
+    //         'utf8',
+    //         function (err) {
+    //           if (err) return console.log(err);
+    //         }
+    //       );
+    //     }
+    //   }
+    // );
+  };
+
+  const updateFile = async (options, targetDirectory) => {
     await appendFile(
       path.join(`${targetDirectory}/index.ts`),
       `export { default as ${
-        model.modelName.charAt(0).toUpperCase() + model.modelName.slice(1)
-      }s } from "./${model.modelName}.models";\n`
+        options.modelName.charAt(0).toUpperCase() + options.modelName.slice(1)
+      }s } from "./${options.modelName}.models";\n`
     );
   };
 
   // if model file found, open and write the file, else create a new and write file
-  const writeModelFile = async (model, targetDirectory) => {
-    // Open file demo.txt in read mode
-    // ${modelName}.models.ts
-
+  const writeModelFile = async (options, targetDirectory) => {
     await access(
-      `${targetDirectory}/${model.modelName}.models.ts`,
+      `${targetDirectory}/${options.modelName}.models.ts`,
       fs.F_OK,
       async err => {
         // if the file is not found
         if (err) {
           // writting file
           await writeFile(
-            path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
+            path.join(`${targetDirectory}`, `${options.modelName}.models.ts`),
             defaultModelContent
           );
-
           // reopen the file and rewrite the model
           // await writtingFile(model, targetDirectory);
-
           // updating model index file
           // await updateFile(model, targetDirectory);
-
           return 1;
         } else {
           // if the file is found
           // directly writte the file
-
           writtingFile(model, targetDirectory);
         }
       }
@@ -124,11 +176,22 @@ export default ${model.modelName};\n`;
         task: async () => await checkPermission(targetDirectory),
         enabled: () => targetDirectory,
       },
-      // {
-      //   title: 'Finding model file',
-      //   task: async () => await writeModelFile(model, targetDirectory),
-      //   enabled: () => targetDirectory,
-      // },
+      {
+        title: 'Checking existing model file',
+        task: async () => await checkFile(options, targetDirectory),
+        enabled: () => targetDirectory && options.language,
+      },
+      {
+        title: 'Writting file',
+        task: async () => await writtingFile(options, targetDirectory),
+        enabled: () => targetDirectory && options.language && fileExistance,
+      },
+      {
+        title: 'Creating file',
+        task: async fileName =>
+          await creatingFile(options, targetDirectory, fileName),
+        enabled: () => targetDirectory && options.language && !fileExistance,
+      },
     ],
     { concurrent: false }
   );

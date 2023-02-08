@@ -29,7 +29,7 @@ const parseCreateProjectArgumentIntoOptions = rawArgs => {
 
   return {
     projectName: args._[0],
-    template: args['--language'],
+    language: args['--language'],
     template: args['--template'],
     skipPrompts: args['--yes'] || false,
     git: args['--git'] || false,
@@ -47,7 +47,7 @@ const promptForMissingOptions = async options => {
   if (options.skipPrompts) {
     return {
       ...options,
-      template: options.language || defaultLanguage,
+      language: options.language || defaultLanguage,
       template: options.template || defaultTemplate,
       database: options.database || defaultDatabase,
     };

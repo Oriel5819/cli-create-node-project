@@ -17,10 +17,10 @@ const createProject = async args => {
 };
 
 const createModel = async args => {
-  let modelOptions = parseCreateModelsArgumentIntoOptions(args);
-  modelOptions = await promptForMissingModelOptions(modelOptions);
-  modelOptions = await formatModelOptionColumns(modelOptions);
-  await createModelProcess(modelOptions);
+  let options = parseCreateModelsArgumentIntoOptions(args);
+  options = await promptForMissingModelOptions(options);
+  options = await formatModelOptionColumns(options);
+  await createModelProcess(options);
 };
 
 export { createProject, createModel };
