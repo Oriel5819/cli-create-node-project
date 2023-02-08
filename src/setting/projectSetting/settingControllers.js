@@ -60,7 +60,7 @@ const create${
           model.charAt(0).toUpperCase() + model.slice(1)
         } = async (request: Request, response: Response) => {
   try {
-    const { description, valeur, unite, idequipement, idcomposant } =
+    const { /* all attributes */ } =
       request.body;
 
     const inserted_${model} = await insert${
@@ -85,7 +85,7 @@ const edit${
           model.charAt(0).toUpperCase() + model.slice(1)
         } = async (request: Request, response: Response) => {
   try {
-    const { description, valeur, unite, idequipement, idcomposant } =
+    const { /* all attributes */ } =
       request.body;
     const { id } = request.params;
     const edited_${model} = await update${
