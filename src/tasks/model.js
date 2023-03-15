@@ -88,7 +88,7 @@ export default ${model.modelName};\n`;
     // Open file demo.txt in read mode
     // ${modelName}.models.ts
 
-    fs.access(
+    await access(
       `${targetDirectory}/${model.modelName}.models.ts`,
       fs.F_OK,
       async err => {
@@ -99,15 +99,19 @@ export default ${model.modelName};\n`;
             path.join(`${targetDirectory}`, `${model.modelName}.models.ts`),
             defaultModelContent
           );
+
           // reopen the file and rewrite the model
-          await writtingFile(model, targetDirectory);
+          // await writtingFile(model, targetDirectory);
+
           // updating model index file
-          await updateFile(model, targetDirectory);
+          // await updateFile(model, targetDirectory);
+
           return 1;
         } else {
           // if the file is found
           // directly writte the file
-          await writtingFile(model, targetDirectory);
+
+          writtingFile(model, targetDirectory);
         }
       }
     );
@@ -120,11 +124,11 @@ export default ${model.modelName};\n`;
         task: async () => await checkPermission(targetDirectory),
         enabled: () => targetDirectory,
       },
-      {
-        title: 'Finding model file',
-        task: async () => await writeModelFile(model, targetDirectory),
-        enabled: () => targetDirectory,
-      },
+      // {
+      //   title: 'Finding model file',
+      //   task: async () => await writeModelFile(model, targetDirectory),
+      //   enabled: () => targetDirectory,
+      // },
     ],
     { concurrent: false }
   );

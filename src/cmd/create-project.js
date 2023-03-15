@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 const parseCreateProjectArgumentIntoOptions = rawArgs => {
   const args = arg(
     {
+      '--language': String,
       '--template': String,
       '--git': Boolean,
       '--yes': Boolean,
@@ -14,6 +15,7 @@ const parseCreateProjectArgumentIntoOptions = rawArgs => {
       '--models': String,
       '--ports': String,
       '--database': String,
+      '-l': '--language',
       '-t': '--template',
       '-g': '--git',
       '-y': '--yes',
@@ -27,6 +29,7 @@ const parseCreateProjectArgumentIntoOptions = rawArgs => {
 
   return {
     projectName: args._[0],
+    template: args['--language'],
     template: args['--template'],
     skipPrompts: args['--yes'] || false,
     git: args['--git'] || false,
@@ -38,11 +41,13 @@ const parseCreateProjectArgumentIntoOptions = rawArgs => {
 };
 
 const promptForMissingOptions = async options => {
+  const defaultLanguage = 'JavaScript';
   const defaultTemplate = 'simple-crud';
   const defaultDatabase = 'mongo';
   if (options.skipPrompts) {
     return {
       ...options,
+      template: options.language || defaultLanguage,
       template: options.template || defaultTemplate,
       database: options.database || defaultDatabase,
     };
@@ -62,6 +67,16 @@ const promptForMissingOptions = async options => {
         else
           return 'Project name may only include letters, numbers, underscores and hashes.';
       },
+    });
+  }
+
+  if (!options.language) {
+    questions.push({
+      type: 'list',
+      name: 'language',
+      message: 'Please choose which programming language to use',
+      choices: ['JavaScript', 'TypeScript'],
+      default: defaultLanguage,
     });
   }
 
@@ -115,6 +130,7 @@ const promptForMissingOptions = async options => {
   return {
     ...options,
     projectName: options.projectName || answers.projectName,
+    language: options.language || answers.language,
     template: options.template || answers.template,
     git: options.git || answers.git,
     database: options.database || answers.database,

@@ -4,26 +4,42 @@ import { promisify } from 'util';
 
 const writeFile = promisify(fs.writeFile);
 
-const settingQueries = async (targetDirectoryRoutes, models, databaseType) => {
+const settingQueries = async (options, targetDirectoryRoutes) => {
   try {
-    if (databaseType === 'mysql') {
-      models.map(async model => {
-        await writeFile(
-          path.join(`${targetDirectoryRoutes}`, `${model}.queries.ts`),
-          `import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { pool } from "../database/databaseConnect";
+    switch (options.database) {
+      case 'mysql':
+        options.models.map(async model => {
+          await writeFile(
+            path.join(
+              `${targetDirectoryRoutes}`,
+              `${model}.queries.${
+                options.language === 'TypeScript' ? 'ts' : 'js'
+              }`
+            ),
+            `${
+              options.language === 'TypeScript'
+                ? 'import { ResultSetHeader, RowDataPacket } from "mysql2";'
+                : ''
+            } 
+import { pool } from "../database/databaseConnect${
+              options.language === 'TypeScript' ? '' : '.js'
+            }";
 
 const select${model.charAt(0).toUpperCase() + model.slice(1)}s = async () => {
-  const [rows] = await pool.query<ResultSetHeader>(
+  const [rows] = await pool.query${
+    options.language === 'TypeScript' ? '<ResultSetHeader>' : ''
+  }(
     \`SELECT * FROM ${model}\`
   );
   return rows;
 };
 
-const select${
-            model.charAt(0).toUpperCase() + model.slice(1)
-          } = async (id: string) => {
-  const [rows] = await pool.query<RowDataPacket[]>(
+const select${model.charAt(0).toUpperCase() + model.slice(1)} = async (id${
+              options.language === 'TypeScript' ? ': string' : ''
+            }) => {
+  const [rows] = await pool.query${
+    options.language === 'TypeScript' ? '<RowDataPacket[]>' : ''
+  }(
     \`SELECT * FROM ${model} WHERE id = ?\`,
     [id]
   );
@@ -33,7 +49,9 @@ const select${
 const insert${model.charAt(0).toUpperCase() + model.slice(1)} = async (
   /* attributes */
 ) => {
-  const [result] = await pool.query<ResultSetHeader>(
+  const [result] = await pool.query ${
+    options.language === 'TypeScript' ? '<ResultSetHeader>' : ''
+  }(
     \`   INSERT INTO ${model} (/* columns */)
         VALUES (?, ?, ?, ?, ?)
       \`,
@@ -45,9 +63,11 @@ const insert${model.charAt(0).toUpperCase() + model.slice(1)} = async (
 
 const update${model.charAt(0).toUpperCase() + model.slice(1)} = async (
   /* attributes */
-  id: string
+  id${options.language === 'TypeScript' ? ': string' : ''}
 ) => {
-  const [result] = await pool.query<ResultSetHeader>(
+  const [result] = await pool.query${
+    options.language === 'TypeScript' ? '<ResultSetHeader>' : ''
+  }(
     \`
     UPDATE ${model} 
     SET /* columns = ? */
@@ -58,11 +78,13 @@ const update${model.charAt(0).toUpperCase() + model.slice(1)} = async (
   return result.affectedRows;
 };
 
-const delete${
-            model.charAt(0).toUpperCase() + model.slice(1)
-          } = async (id: string) => {
-  const [result] = await pool.query<ResultSetHeader>(
-    ``DELETE FROM ${model} WHERE id = ?\`,
+const delete${model.charAt(0).toUpperCase() + model.slice(1)} = async (id${
+              options.language === 'TypeScript' ? ': string' : ''
+            }) => {
+  const [result] = await pool.query${
+    options.language === 'TypeScript' ? '<ResultSetHeader>' : ''
+  }(
+    \`DELETE FROM ${model} WHERE id = ?\`,
     [id]
   );
   return result.affectedRows;
@@ -75,15 +97,24 @@ export {
   update${model.charAt(0).toUpperCase() + model.slice(1)},
   delete${model.charAt(0).toUpperCase() + model.slice(1)},
 };\n`
-        );
-      });
-    } else if (databaseType === 'mongo' || databaseType === 'mongodb') {
-      models.map(async model => {
-        await writeFile(
-          path.join(`${targetDirectoryRoutes}`, `${model}.queries.ts`),
-          `import { ${
-            model.charAt(0).toUpperCase() + model.slice(1)
-          }s } from "../models";
+          );
+        });
+        break;
+
+      case 'mongo' || 'mongodb':
+        options.models.map(async model => {
+          await writeFile(
+            path.join(
+              `${targetDirectoryRoutes}`,
+              `${model}.queries.${
+                options.language === 'TypeScript' ? 'ts' : 'js'
+              }`
+            ),
+            `import { ${
+              model.charAt(0).toUpperCase() + model.slice(1)
+            }s } from "../models${
+              options.language === 'TypeScript' ? '' : '/index.js'
+            }";
 
 
 const select${model.charAt(0).toUpperCase() + model.slice(1)}s = async () => {
@@ -93,9 +124,9 @@ const select${model.charAt(0).toUpperCase() + model.slice(1)}s = async () => {
   return result;
 };
 
-const select${
-            model.charAt(0).toUpperCase() + model.slice(1)
-          } = async (id: string) => {
+const select${model.charAt(0).toUpperCase() + model.slice(1)} = async (id${
+              options.language === 'TypeScript' ? ': string' : ''
+            }) => {
    const result = await ${
      model.charAt(0).toUpperCase() + model.slice(1)
    }s.findById(id);
@@ -114,7 +145,7 @@ const insert${model.charAt(0).toUpperCase() + model.slice(1)} = async (
 
 const update${model.charAt(0).toUpperCase() + model.slice(1)} = async (
   /* attributes */
-  id: string
+  id${options.language === 'TypeScript' ? ': string' : ''}
 ) => {
     const result = await ${
       model.charAt(0).toUpperCase() + model.slice(1)
@@ -122,9 +153,9 @@ const update${model.charAt(0).toUpperCase() + model.slice(1)} = async (
     return result
 };
 
-const delete${
-            model.charAt(0).toUpperCase() + model.slice(1)
-          } = async (id: string) => {
+const delete${model.charAt(0).toUpperCase() + model.slice(1)} = async (id${
+              options.language === 'TypeScript' ? ': string' : ''
+            }) => {
   const result = await ${
     model.charAt(0).toUpperCase() + model.slice(1)
   }s.findByIdAndDelete(id);
@@ -138,8 +169,12 @@ export {
   update${model.charAt(0).toUpperCase() + model.slice(1)},
   delete${model.charAt(0).toUpperCase() + model.slice(1)},
 };\n`
-        );
-      });
+          );
+        });
+        break;
+
+      default:
+        break;
     }
   } catch (error) {
     console.log(error);

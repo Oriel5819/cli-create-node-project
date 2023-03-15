@@ -5,16 +5,23 @@ import { promisify } from 'util';
 const writeFile = promisify(fs.writeFile);
 const appendFile = promisify(fs.appendFile);
 
-const settingRoutes = async (targetDirectoryRoutes, models) => {
+const settingRoutes = async (options, targetDirectoryRoutes) => {
   try {
     // console.log(targetDirectoryRoutes, models);
     await writeFile(
-      path.join(`${targetDirectoryRoutes}`, `index.ts`),
+      path.join(
+        `${targetDirectoryRoutes}`,
+        options.language === 'TypeScript' ? 'index.ts' : 'index.js'
+      ),
       `// all routes\n`
     );
-    models.map(async model => {
+
+    options.models.map(async model => {
       await writeFile(
-        path.join(`${targetDirectoryRoutes}`, `${model}.route.ts`),
+        path.join(
+          `${targetDirectoryRoutes}`,
+          `${model}.route.${options.language === 'TypeScript' ? 'ts' : 'js'}`
+        ),
         `import { Router } from "express";
     const ${model}Route = Router();
     import {
@@ -23,7 +30,9 @@ const settingRoutes = async (targetDirectoryRoutes, models) => {
       create${model.charAt(0).toUpperCase() + model.slice(1)},
       edit${model.charAt(0).toUpperCase() + model.slice(1)},
       remove${model.charAt(0).toUpperCase() + model.slice(1)},
-    } from "../controllers/${model}.controllers";
+    } from "../controllers/${model}.controllers${
+          options.language === 'TypeScript' ? '' : '.js'
+        }";
     ${model}Route.get("/", get${
           model.charAt(0).toUpperCase() + model.slice(1)
         }s);
@@ -42,8 +51,14 @@ const settingRoutes = async (targetDirectoryRoutes, models) => {
     export default ${model}Route;\n`
       );
       await appendFile(
-        path.join(`${targetDirectoryRoutes}/index.ts`),
-        `export { default as ${model} } from "./${model}.route";\n`
+        path.join(
+          `${targetDirectoryRoutes}/index.${
+            options.language === 'TypeScript' ? 'ts' : 'js'
+          }`
+        ),
+        `export { default as ${model} } from "./${model}.route${
+          options.language === 'TypeScript' ? '' : '.js'
+        }";\n`
       );
     });
   } catch (error) {

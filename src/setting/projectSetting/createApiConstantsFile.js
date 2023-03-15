@@ -9,25 +9,25 @@ const createApiConstantsFile = async options => {
   try {
     await writeFile(
       path.join(
-        `${options.targetDirectory}/${options.projectName}/${options.projectName}-api/src/config`,
-        'constants.ts'
+        `${options.targetDirectory}/${options.projectName}/api/src/config`,
+        options.language === 'TypeScript' ? 'constants.ts' : 'constants.js'
       ),
       options.database === 'none'
         ? `import { config } from "dotenv";
-        config({ path: "./src/.env" });
-        const { PORT, NODE_ENV } = process.env;
-        export { PORT, NODE_ENV };`
+config({ path: "./src/.env" });
+const { PORT, NODE_ENV } = process.env;
+export { PORT, NODE_ENV };`
         : options.database === 'mysql'
         ? `import { config } from "dotenv";
-        config({ path: "./src/.env" });
-        const { PORT, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE } =
+config({ path: "./src/.env" });
+const { PORT, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE } =
           process.env;
-        export { PORT, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE };`
+export { PORT, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE };`
         : `import { config } from "dotenv";
-        config({ path: "./src/.env" });
-        const { PORT, NODE_ENV, MONGO_URI } =
+config({ path: "./src/.env" });
+const { PORT, NODE_ENV, MONGO_URI } =
           process.env;
-        export { PORT, NODE_ENV, MONGO_URI };`,
+export { PORT, NODE_ENV, MONGO_URI };`,
       err => {
         if (err) console.log(err);
         console.log(chalk.green.bold('Success'), 'constants.ts created, OK');

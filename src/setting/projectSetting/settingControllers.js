@@ -4,25 +4,39 @@ import { promisify } from 'util';
 
 const writeFile = promisify(fs.writeFile);
 
-const settingControllers = async (targetDirectoryRoutes, models) => {
+const settingControllers = async (options, targetDirectoryRoutes) => {
   try {
-    models.map(async model => {
+    options.models.map(async model => {
       await writeFile(
-        path.join(`${targetDirectoryRoutes}`, `${model}.controllers.ts`),
-        `import { RequestHandler, Request, Response } from "express";
+        path.join(
+          `${targetDirectoryRoutes}`,
+          `${model}.controllers.${
+            options.language === 'TypeScript' ? 'ts' : 'js'
+          }`
+        ),
+        `${
+          options.language === 'TypeScript'
+            ? 'import { RequestHandler, Request, Response } from "express";'
+            : ''
+        }
 import {
   select${model.charAt(0).toUpperCase() + model.slice(1)}s,
   select${model.charAt(0).toUpperCase() + model.slice(1)},
   insert${model.charAt(0).toUpperCase() + model.slice(1)},
   update${model.charAt(0).toUpperCase() + model.slice(1)},
   delete${model.charAt(0).toUpperCase() + model.slice(1)},
-} from "../queries/${model}.queries";
+} from "../queries/${model}.queries${
+          options.language === 'TypeScript' ? '' : '.js'
+        }";
 
-const get${
-          model.charAt(0).toUpperCase() + model.slice(1)
-        }s: RequestHandler = async (
-  request: Request,
-  response: Response
+const get${model.charAt(0).toUpperCase() + model.slice(1)}s${
+          options.language === 'TypeScript' ? ': RequestHandler' : ''
+        } = async (
+ ${
+   options.language === 'TypeScript'
+     ? 'request: Request, response: Response'
+     : 'request, response'
+ }
 ) => {
   try {
     const all_${model}s = await select${
@@ -39,9 +53,13 @@ const get${
   }
 };
 
-const get${
-          model.charAt(0).toUpperCase() + model.slice(1)
-        } = async (request: Request, response: Response) => {
+const get${model.charAt(0).toUpperCase() + model.slice(1)}${
+          options.language === 'TypeScript' ? ': RequestHandler' : ''
+        } = async (${
+          options.language === 'TypeScript'
+            ? 'request: Request, response: Response'
+            : 'request, response'
+        }) => {
   try {
     const { id } = request.params;
     const ${model} = await select${
@@ -56,11 +74,16 @@ const get${
     });
   }
 };
-const create${
-          model.charAt(0).toUpperCase() + model.slice(1)
-        } = async (request: Request, response: Response) => {
+
+const create${model.charAt(0).toUpperCase() + model.slice(1)}${
+          options.language === 'TypeScript' ? ': RequestHandler' : ''
+        } = async (${
+          options.language === 'TypeScript'
+            ? 'request: Request, response: Response'
+            : 'request, response'
+        }) => {
   try {
-    const { /* all attributes */ } =
+    const { description, valeur, unite, idequipement, idcomposant } =
       request.body;
 
     const inserted_${model} = await insert${
@@ -81,11 +104,16 @@ const create${
     });
   }
 };
-const edit${
-          model.charAt(0).toUpperCase() + model.slice(1)
-        } = async (request: Request, response: Response) => {
+
+const edit${model.charAt(0).toUpperCase() + model.slice(1)}${
+          options.language === 'TypeScript' ? ': RequestHandler' : ''
+        } = async (${
+          options.language === 'TypeScript'
+            ? 'request: Request, response: Response'
+            : 'request, response'
+        }) => {
   try {
-    const { /* all attributes */ } =
+    const { description, valeur, unite, idequipement, idcomposant } =
       request.body;
     const { id } = request.params;
     const edited_${model} = await update${
@@ -107,9 +135,14 @@ const edit${
     });
   }
 };
-const remove${
-          model.charAt(0).toUpperCase() + model.slice(1)
-        } = async (request: Request, response: Response) => {
+
+const remove${model.charAt(0).toUpperCase() + model.slice(1)}${
+          options.language === 'TypeScript' ? ': RequestHandler' : ''
+        } = async (${
+          options.language === 'TypeScript'
+            ? 'request: Request, response: Response'
+            : 'request, response'
+        }) => {
   try {
     const { id } = request.params;
     const deleted_${model} = await delete${
